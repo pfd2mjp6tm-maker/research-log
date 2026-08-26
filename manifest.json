@@ -1,0 +1,10 @@
+{
+  "name": "Research Log",
+  "short_name": "Research Log",
+  "description": "Daily research log",
+  "start_url": "./",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#ffffff",
+  "orientation": "portrait"
+}
