@@ -1,0 +1,475 @@
+/* =========================
+   Base
+========================= */
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    font-family:
+        -apple-system,
+        BlinkMacSystemFont,
+        "Helvetica Neue",
+        Arial,
+        sans-serif;
+
+    background: #f5f6f8;
+    color: #222;
+}
+
+
+/* =========================
+   App
+========================= */
+
+.app {
+    max-width: 600px;
+    margin: 0 auto;
+    min-height: 100vh;
+    background: white;
+}
+
+
+/* =========================
+   Header
+========================= */
+
+.header {
+    padding: 28px 20px 18px;
+    text-align: center;
+}
+
+.header h1 {
+    margin: 0;
+    font-size: 26px;
+    font-weight: 700;
+}
+
+.header p {
+    margin: 6px 0 0;
+    color: #888;
+    font-size: 13px;
+}
+
+
+/* =========================
+   Calendar
+========================= */
+
+.calendar-container {
+    padding: 10px 16px 100px;
+}
+
+
+.calendar-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    margin-bottom: 20px;
+}
+
+
+.calendar-header h2 {
+    margin: 0;
+    font-size: 20px;
+}
+
+
+.calendar-header button {
+    width: 42px;
+    height: 42px;
+
+    border: none;
+    border-radius: 50%;
+
+    background: #f0f1f3;
+
+    font-size: 28px;
+    color: #555;
+
+    cursor: pointer;
+}
+
+
+.calendar-header button:active {
+    transform: scale(0.95);
+}
+
+
+/* =========================
+   Weekdays
+========================= */
+
+.weekdays {
+    display: grid;
+
+    grid-template-columns:
+        repeat(7, 1fr);
+
+    margin-bottom: 8px;
+
+    text-align: center;
+
+    color: #999;
+
+    font-size: 12px;
+    font-weight: 600;
+}
+
+
+/* =========================
+   Calendar Grid
+========================= */
+
+.calendar {
+    display: grid;
+
+    grid-template-columns:
+        repeat(7, 1fr);
+
+    gap: 6px;
+}
+
+
+.day {
+    position: relative;
+
+    min-height: 60px;
+
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 12px;
+
+    cursor: pointer;
+
+    font-size: 15px;
+
+    background: white;
+}
+
+
+.day:hover {
+    background: #f4f5f7;
+}
+
+
+.day.other-month {
+    color: #ccc;
+}
+
+
+.day.today {
+    font-weight: 700;
+
+    border: 2px solid #222;
+}
+
+
+.day.has-log::after {
+    content: "";
+
+    position: absolute;
+
+    bottom: 7px;
+
+    width: 6px;
+    height: 6px;
+
+    border-radius: 50%;
+
+    background: #222;
+}
+
+
+/* =========================
+   Bottom Navigation
+========================= */
+
+.bottom-nav {
+    position: fixed;
+
+    bottom: 0;
+    left: 50%;
+
+    transform: translateX(-50%);
+
+    width: 100%;
+    max-width: 600px;
+
+    height: 72px;
+
+    display: flex;
+
+    justify-content: space-around;
+    align-items: center;
+
+    background: rgba(255,255,255,0.96);
+
+    border-top: 1px solid #eee;
+
+    z-index: 100;
+}
+
+
+.nav-button {
+    border: none;
+
+    background: transparent;
+
+    color: #999;
+
+    display: flex;
+
+    flex-direction: column;
+
+    align-items: center;
+
+    gap: 4px;
+
+    font-size: 20px;
+
+    cursor: pointer;
+}
+
+
+.nav-button span {
+    font-size: 11px;
+}
+
+
+.nav-button.active {
+    color: #222;
+}
+
+
+/* =========================
+   Modal
+========================= */
+
+.modal {
+    position: fixed;
+
+    inset: 0;
+
+    background: rgba(0,0,0,0.45);
+
+    display: none;
+
+    align-items: flex-end;
+
+    justify-content: center;
+
+    z-index: 200;
+}
+
+
+.modal.show {
+    display: flex;
+}
+
+
+.modal-content {
+    width: 100%;
+    max-width: 600px;
+
+    max-height: 92vh;
+
+    overflow-y: auto;
+
+    background: white;
+
+    border-radius:
+        22px
+        22px
+        0
+        0;
+
+    padding-bottom: 30px;
+}
+
+
+/* =========================
+   Modal Header
+========================= */
+
+.modal-header {
+    position: sticky;
+
+    top: 0;
+
+    background: white;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    padding: 18px;
+
+    border-bottom: 1px solid #eee;
+
+    z-index: 10;
+}
+
+
+.modal-header h2 {
+    margin: 0;
+
+    font-size: 18px;
+}
+
+
+.close-button {
+    position: absolute;
+
+    left: 16px;
+
+    top: 13px;
+
+    width: 36px;
+    height: 36px;
+
+    border: none;
+
+    border-radius: 50%;
+
+    background: #f1f2f4;
+
+    font-size: 24px;
+
+    color: #555;
+
+    cursor: pointer;
+}
+
+
+/* =========================
+   Form
+========================= */
+
+.log-form {
+    padding: 22px 20px;
+}
+
+
+.log-form label {
+    display: block;
+
+    margin:
+        18px
+        0
+        7px;
+
+    font-size: 14px;
+
+    font-weight: 600;
+}
+
+
+.log-form label:first-child {
+    margin-top: 0;
+}
+
+
+textarea,
+input {
+    width: 100%;
+
+    border:
+        1px solid
+        #ddd;
+
+    border-radius: 12px;
+
+    padding: 12px;
+
+    font-family: inherit;
+
+    font-size: 15px;
+
+    background: #fafafa;
+
+    outline: none;
+}
+
+
+textarea {
+    min-height: 90px;
+
+    resize: vertical;
+}
+
+
+textarea:focus,
+input:focus {
+    border-color: #777;
+
+    background: white;
+}
+
+
+input {
+    height: 46px;
+}
+
+
+/* =========================
+   Save Button
+========================= */
+
+.save-button {
+    width: 100%;
+
+    margin-top: 28px;
+
+    height: 52px;
+
+    border: none;
+
+    border-radius: 14px;
+
+    background: #222;
+
+    color: white;
+
+    font-size: 16px;
+
+    font-weight: 600;
+
+    cursor: pointer;
+}
+
+
+.save-button:active {
+    transform: scale(0.98);
+}
+
+
+/* =========================
+   Small Screen
+========================= */
+
+@media (max-width: 400px) {
+
+    .calendar-container {
+        padding-left: 10px;
+        padding-right: 10px;
+    }
+
+    .calendar {
+        gap: 3px;
+    }
+
+    .day {
+        min-height: 54px;
+        border-radius: 10px;
+    }
+
+}
