@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta name="viewport"
+      content="width=device-width, initial-scale=1.0">
+
+<title>Research Log</title>
+
+<link rel="stylesheet"
+      href="style.css">
+
+</head>
+
+
+<body>
+
+
+<div class="app">
+
+
+    <!-- =========================
+         Header
+    ========================== -->
+
+    <header class="header">
+
+        <h1>Research Log</h1>
+
+        <p>
+            Your research memory
+        </p>
+
+    </header>
+
+
+
+    <!-- =========================
+         Calendar
+    ========================== -->
+
+    <main class="calendar-container">
+
+
+        <div class="calendar-header">
+
+            <button id="prevMonth">
+                ‹
+            </button>
+
+
+            <h2 id="monthTitle">
+                2026年8月
+            </h2>
+
+
+            <button id="nextMonth">
+                ›
+            </button>
+
+        </div>
+
+
+
+        <div class="weekdays">
+
+            <div>日</div>
+            <div>月</div>
+            <div>火</div>
+            <div>水</div>
+            <div>木</div>
+            <div>金</div>
+            <div>土</div>
+
+        </div>
+
+
+
+        <div
+            id="calendar"
+            class="calendar">
+        </div>
+
+
+    </main>
+
+
+
+    <!-- =========================
+         Navigation
+    ========================== -->
+
+    <nav class="bottom-nav">
+
+
+        <button
+            class="nav-button active"
+            id="calendarButton">
+
+            📅
+            <span>
+                Calendar
+            </span>
+
+        </button>
+
+
+        <button
+            class="nav-button"
+            id="searchButton">
+
+            🔎
+            <span>
+                Search
+            </span>
+
+        </button>
+
+
+        <button
+            class="nav-button"
+            id="summaryButton">
+
+            📊
+            <span>
+                Summary
+            </span>
+
+        </button>
+
+
+    </nav>
+
+
+</div>
+
+
+
+<!-- =========================
+     Log Modal
+========================== -->
+
+<div
+    id="logModal"
+    class="modal">
+
+
+    <div class="modal-content">
+
+
+        <div class="modal-header">
+
+
+            <button
+                id="closeModal"
+                class="close-button">
+
+                ×
+
+            </button>
+
+
+            <h2 id="selectedDate">
+                2026/8/26
+            </h2>
+
+
+        </div>
+
+
+
+        <div class="log-form">
+
+
+            <label>
+                何をした？
+            </label>
+
+            <textarea
+                id="action"
+                placeholder="今日やったことを入力">
+            </textarea>
+
+
+
+            <label>
+                目的
+            </label>
+
+            <textarea
+                id="purpose"
+                placeholder="何のために？">
+            </textarea>
+
+
+
+            <label>
+                結果
+            </label>
+
+            <textarea
+                id="result"
+                placeholder="どうだった？">
+            </textarea>
+
+
+
+            <label>
+                考察・気づき
+            </label>
+
+            <textarea
+                id="thought"
+                placeholder="何が分かった？何を考えた？">
+            </textarea>
+
+
+
+            <label>
+                次に活かすこと
+            </label>
+
+            <textarea
+                id="next"
+                placeholder="次に何をする？">
+            </textarea>
+
+
+
+            <label>
+                タグ
+            </label>
+
+            <input
+                type="text"
+                id="tags"
+                placeholder="#R2試薬 #加速試験">
+
+
+            <button
+                id="saveButton"
+                class="save-button">
+
+                保存する
+
+            </button>
+
+
+        </div>
+
+
+    </div>
+
+
+</div>
+
+
+
+<script src="script.js"></script>
+
+</body>
+
+</html>
