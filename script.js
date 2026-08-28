@@ -1,6 +1,6 @@
 // ============================
 // Research Log
-// script.js
+// Ver.1.1
 // ============================
 
 
@@ -11,6 +11,8 @@
 let currentDate = new Date();
 
 let selectedDate = null;
+
+let currentLogs = [];
 
 
 // ============================
@@ -61,21 +63,39 @@ const saveButton =
 
 
 // ============================
-// Local Storage
+// Storage
 // ============================
 
 const STORAGE_KEY =
     "researchLogs";
 
+const TAG_STORAGE_KEY =
+    "researchTags";
+
+
+// ============================
+// Get Logs
+// ============================
 
 function getLogs() {
 
-    return JSON.parse(
-        localStorage.getItem(STORAGE_KEY)
-    ) || {};
+    const data =
+        JSON.parse(
+            localStorage.getItem(STORAGE_KEY)
+        );
+
+    if (!data) {
+        return {};
+    }
+
+    return data;
 
 }
 
+
+// ============================
+// Save Logs
+// ============================
 
 function saveLogs(logs) {
 
@@ -88,10 +108,89 @@ function saveLogs(logs) {
 
 
 // ============================
-// Date Helper
+// Migration
 // ============================
 
-function getDateKey(year, month, day) {
+function migrateOldData() {
+
+    const logs =
+        getLogs();
+
+    let changed = false;
+
+
+    Object.keys(logs).forEach(
+        function(dateKey) {
+
+            if (
+                !Array.isArray(
+                    logs[dateKey]
+                )
+            ) {
+
+                const oldLog =
+                    logs[dateKey];
+
+
+                logs[dateKey] = [
+                    {
+                        action:
+                            oldLog.action || "",
+
+                        purpose:
+                            oldLog.purpose || "",
+
+                        result:
+                            oldLog.result || "",
+
+                        thought:
+                            oldLog.thought || "",
+
+                        next:
+                            oldLog.next || "",
+
+                        tags:
+                            oldLog.tags || "",
+
+                        mainTag:
+                            oldLog.mainTag || "",
+
+                        mainTagColor:
+                            oldLog.mainTagColor || "",
+
+                        createdAt:
+                            oldLog.createdAt ||
+                            new Date().toISOString()
+                    }
+                ];
+
+
+                changed = true;
+
+            }
+
+        }
+    );
+
+
+    if (changed) {
+
+        saveLogs(logs);
+
+    }
+
+}
+
+
+// ============================
+// Date Key
+// ============================
+
+function getDateKey(
+    year,
+    month,
+    day
+) {
 
     return (
         year +
@@ -104,10 +203,15 @@ function getDateKey(year, month, day) {
 }
 
 
+// ============================
+// Format Date
+// ============================
+
 function formatDate(dateKey) {
 
     const parts =
         dateKey.split("-");
+
 
     return (
         parts[0] +
@@ -143,7 +247,6 @@ function renderCalendar() {
         "月";
 
 
-    // First day of month
     const firstDay =
         new Date(
             year,
@@ -152,7 +255,6 @@ function renderCalendar() {
         ).getDay();
 
 
-    // Number of days
     const daysInMonth =
         new Date(
             year,
@@ -161,7 +263,6 @@ function renderCalendar() {
         ).getDate();
 
 
-    // Previous month's days
     const daysInPreviousMonth =
         new Date(
             year,
@@ -227,7 +328,6 @@ function renderCalendar() {
             );
 
 
-        // Today's date
         const today =
             new Date();
 
@@ -245,25 +345,74 @@ function renderCalendar() {
         }
 
 
-        // Has log
+        // ============================
+        // Colored tags
+        // ============================
+
         if (
             logs[dateKey] &&
             logs[dateKey].length > 0
         ) {
 
-            dayElement.classList.add(
-                "has-log"
-            );
+            const colors =
+                getMainTagColors(
+                    logs[dateKey]
+                );
+
+
+            if (colors.length > 0) {
+
+                const colorContainer =
+                    document.createElement(
+                        "div"
+                    );
+
+
+                colorContainer.className =
+                    "tag-dots";
+
+
+                colors.forEach(
+                    function(color) {
+
+                        const dot =
+                            document.createElement(
+                                "span"
+                            );
+
+
+                        dot.className =
+                            "tag-dot";
+
+
+                        dot.style.backgroundColor =
+                            color;
+
+
+                        colorContainer.appendChild(
+                            dot
+                        );
+
+                    }
+                );
+
+
+                dayElement.appendChild(
+                    colorContainer
+                );
+
+            }
 
         }
 
 
-        // Click
         dayElement.addEventListener(
             "click",
             function() {
 
-                openLog(dateKey);
+                openLog(
+                    dateKey
+                );
 
             }
         );
@@ -277,7 +426,7 @@ function renderCalendar() {
 
 
     // ============================
-    // Next month's days
+    // Next month
     // ============================
 
     const totalCells =
@@ -328,11 +477,56 @@ function createDayElement(
         className;
 
 
-    element.textContent =
+    const number =
+        document.createElement("span");
+
+
+    number.textContent =
         dayNumber;
 
 
+    element.appendChild(
+        number
+    );
+
+
     return element;
+
+}
+
+
+// ============================
+// Get Main Tag Colors
+// ============================
+
+function getMainTagColors(
+    logs
+) {
+
+    const colors = [];
+
+
+    logs.forEach(
+        function(log) {
+
+            if (
+                log.mainTagColor &&
+                !colors.includes(
+                    log.mainTagColor
+                )
+            ) {
+
+                colors.push(
+                    log.mainTagColor
+                );
+
+            }
+
+        }
+    );
+
+
+    return colors;
 
 }
 
@@ -348,51 +542,36 @@ function openLog(dateKey) {
 
 
     selectedDateElement.textContent =
-        formatDate(dateKey);
+        formatDate(
+            dateKey
+        );
 
 
-    // Clear form first
-    actionInput.value = "";
-    purposeInput.value = "";
-    resultInput.value = "";
-    thoughtInput.value = "";
-    nextInput.value = "";
-    tagsInput.value = "";
+    currentLogs = [];
+
+
+    clearForm();
 
 
     const logs =
         getLogs();
 
 
-    // If logs exist
     if (
         logs[dateKey] &&
         logs[dateKey].length > 0
     ) {
 
-        // For now,
-        // show the first log
-        const log =
-            logs[dateKey][0];
+        currentLogs =
+            logs[dateKey].map(
+                function(log) {
 
+                    return {
+                        ...log
+                    };
 
-        actionInput.value =
-            log.action || "";
-
-        purposeInput.value =
-            log.purpose || "";
-
-        resultInput.value =
-            log.result || "";
-
-        thoughtInput.value =
-            log.thought || "";
-
-        nextInput.value =
-            log.next || "";
-
-        tagsInput.value =
-            log.tags || "";
+                }
+            );
 
     }
 
@@ -400,6 +579,27 @@ function openLog(dateKey) {
     logModal.classList.add(
         "show"
     );
+
+}
+
+
+// ============================
+// Clear Form
+// ============================
+
+function clearForm() {
+
+    actionInput.value = "";
+
+    purposeInput.value = "";
+
+    resultInput.value = "";
+
+    thoughtInput.value = "";
+
+    nextInput.value = "";
+
+    tagsInput.value = "";
 
 }
 
@@ -415,6 +615,8 @@ function closeLog() {
     );
 
     selectedDate = null;
+
+    currentLogs = [];
 
 }
 
@@ -442,28 +644,22 @@ saveButton.addEventListener(
         const action =
             actionInput.value.trim();
 
-
         const purpose =
             purposeInput.value.trim();
-
 
         const result =
             resultInput.value.trim();
 
-
         const thought =
             thoughtInput.value.trim();
 
-
         const next =
             nextInput.value.trim();
-
 
         const tags =
             tagsInput.value.trim();
 
 
-        // At least one field
         if (
             !action &&
             !purpose &&
@@ -482,23 +678,31 @@ saveButton.addEventListener(
         }
 
 
-        const logs =
-            getLogs();
-
-
         const newLog = {
 
-            action: action,
+            action:
+                action,
 
-            purpose: purpose,
+            purpose:
+                purpose,
 
-            result: result,
+            result:
+                result,
 
-            thought: thought,
+            thought:
+                thought,
 
-            next: next,
+            next:
+                next,
 
-            tags: tags,
+            tags:
+                tags,
+
+            mainTag:
+                "",
+
+            mainTagColor:
+                "",
 
             createdAt:
                 new Date().toISOString()
@@ -506,32 +710,47 @@ saveButton.addEventListener(
         };
 
 
-        // ============================
-        // Save
-        // ============================
-
-        // For now,
-        // one log per day
-
-        logs[selectedDate] = [
+        currentLogs.push(
             newLog
-        ];
+        );
 
 
-        saveLogs(logs);
+        const logs =
+            getLogs();
 
 
-        // Close
+        logs[selectedDate] =
+            currentLogs;
+
+
+        saveLogs(
+            logs
+        );
+
+
+        // ============================
+        // Continue?
+        // ============================
+
+        const addMore =
+            confirm(
+                "ログを保存しました！\n\n" +
+                "同じ日にもう1つログを追加しますか？"
+            );
+
+
+        if (addMore) {
+
+            clearForm();
+
+            return;
+
+        }
+
+
         closeLog();
 
-
-        // Update calendar
         renderCalendar();
-
-
-        alert(
-            "研究ログを保存しました！"
-        );
 
     }
 );
@@ -574,29 +793,33 @@ nextMonth.addEventListener(
 
 
 // ============================
-// Bottom Navigation
+// Navigation
 // ============================
 
 document
-    .getElementById("calendarButton")
+    .getElementById(
+        "calendarButton"
+    )
     .addEventListener(
         "click",
         function() {
 
-            // Calendar is already shown
+            renderCalendar();
 
         }
     );
 
 
 document
-    .getElementById("searchButton")
+    .getElementById(
+        "searchButton"
+    )
     .addEventListener(
         "click",
         function() {
 
             alert(
-                "Search機能は次のバージョンで追加します！"
+                "Search機能は次のアップデートで追加します！"
             );
 
         }
@@ -604,13 +827,15 @@ document
 
 
 document
-    .getElementById("summaryButton")
+    .getElementById(
+        "summaryButton"
+    )
     .addEventListener(
         "click",
         function() {
 
             alert(
-                "Summary機能は次のバージョンで追加します！"
+                "Summary機能は次のアップデートで追加します！"
             );
 
         }
@@ -620,5 +845,7 @@ document
 // ============================
 // Start
 // ============================
+
+migrateOldData();
 
 renderCalendar();
