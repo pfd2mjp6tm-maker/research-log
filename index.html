@@ -62,8 +62,12 @@
 
         <div class="calendar-header">
 
-            <button id="prevMonth">
+            <button
+                id="prevMonth"
+                type="button">
+
                 ‹
+
             </button>
 
 
@@ -72,8 +76,12 @@
             </h2>
 
 
-            <button id="nextMonth">
+            <button
+                id="nextMonth"
+                type="button">
+
                 ›
+
             </button>
 
         </div>
@@ -113,7 +121,8 @@
 
         <button
             class="nav-button active"
-            id="calendarButton">
+            id="calendarButton"
+            type="button">
 
             📅
 
@@ -126,7 +135,8 @@
 
         <button
             class="nav-button"
-            id="searchButton">
+            id="searchButton"
+            type="button">
 
             🔎
 
@@ -139,7 +149,8 @@
 
         <button
             class="nav-button"
-            id="summaryButton">
+            id="summaryButton"
+            type="button">
 
             📊
 
@@ -169,14 +180,17 @@
     <div class="modal-content">
 
 
-        <!-- Modal Header -->
+        <!-- =========================
+             Modal Header
+        ========================== -->
 
         <div class="modal-header">
 
 
             <button
                 id="closeModal"
-                class="close-button">
+                class="close-button"
+                type="button">
 
                 ×
 
@@ -207,11 +221,14 @@
              Add Log Button
         ========================== -->
 
-        <div class="add-log-area">
+        <div
+            id="addLogArea"
+            class="add-log-area">
 
             <button
                 id="addLogButton"
-                class="add-log-button">
+                class="add-log-button"
+                type="button">
 
                 ＋ 研究ログを追加
 
@@ -299,7 +316,8 @@
 
             <button
                 id="saveButton"
-                class="save-button">
+                class="save-button"
+                type="button">
 
                 保存する
 
@@ -307,6 +325,68 @@
 
 
         </div>
+
+
+    </div>
+
+
+</div>
+
+
+
+<!-- =========================
+     Return Choice Modal
+========================== -->
+
+<div
+    id="returnModal"
+    class="choice-modal">
+
+
+    <div class="choice-modal-content">
+
+
+        <h2>
+            どこに戻りますか？
+        </h2>
+
+
+        <p id="returnMessage">
+            戻り先を選択してください。
+        </p>
+
+
+
+        <button
+            id="returnToLogs"
+            type="button"
+            class="choice-button">
+
+            📋 この日のログを見る
+
+        </button>
+
+
+
+        <button
+            id="returnToCalendar"
+            type="button"
+            class="choice-button">
+
+            📅 カレンダーに戻る
+
+        </button>
+
+
+
+        <button
+            id="cancelReturn"
+            type="button"
+            class="cancel-button">
+
+            キャンセル
+
+        </button>
 
 
     </div>
