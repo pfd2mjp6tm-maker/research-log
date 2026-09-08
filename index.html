@@ -20,13 +20,10 @@
 <meta name="apple-mobile-web-app-title"
       content="Research Log">
 
-<link rel="apple-touch-icon"
-      href="B56F0F83-2A26-41C1-8CC0-009FF991AFB1.jpeg">
+<title>Research Log</title>
 
 <link rel="manifest"
       href="manifest.json">
-
-<title>Research Log</title>
 
 <link rel="stylesheet"
       href="style.css">
@@ -71,7 +68,7 @@
 
 
             <h2 id="monthTitle">
-                2026年8月
+                2026年9月
             </h2>
 
 
@@ -100,23 +97,6 @@
         <div
             id="calendar"
             class="calendar">
-        </div>
-
-
-
-        <!-- =========================
-             Tag Legend
-        ========================== -->
-
-        <div class="tag-legend">
-
-            <h3>
-                Tags
-            </h3>
-
-            <div id="tagLegend">
-            </div>
-
         </div>
 
 
@@ -204,7 +184,7 @@
 
 
             <h2 id="selectedDate">
-                2026/8/28
+                2026/9/8
             </h2>
 
 
@@ -212,14 +192,44 @@
 
 
 
-        <!-- Log Form -->
+        <!-- =========================
+             Existing Logs
+        ========================== -->
 
-        <div class="log-form">
+        <div
+            id="logList"
+            class="log-list">
+        </div>
 
 
-            <!-- =========================
-                 What did you do?
-            ========================== -->
+
+        <!-- =========================
+             Add Log Button
+        ========================== -->
+
+        <div class="add-log-area">
+
+            <button
+                id="addLogButton"
+                class="add-log-button">
+
+                ＋ 研究ログを追加
+
+            </button>
+
+        </div>
+
+
+
+        <!-- =========================
+             Log Form
+        ========================== -->
+
+        <div
+            id="logForm"
+            class="log-form"
+            style="display: none;">
+
 
             <label>
                 何をした？
@@ -232,10 +242,6 @@
 
 
 
-            <!-- =========================
-                 Purpose
-            ========================== -->
-
             <label>
                 目的
             </label>
@@ -246,10 +252,6 @@
             </textarea>
 
 
-
-            <!-- =========================
-                 Result
-            ========================== -->
 
             <label>
                 結果
@@ -262,10 +264,6 @@
 
 
 
-            <!-- =========================
-                 Thought
-            ========================== -->
-
             <label>
                 考察・気づき
             </label>
@@ -276,10 +274,6 @@
             </textarea>
 
 
-
-            <!-- =========================
-                 Next
-            ========================== -->
 
             <label>
                 次に活かすこと
@@ -292,260 +286,22 @@
 
 
 
-            <!-- =========================
-                 Main Tag
-            ========================== -->
-
             <label>
-                メインタグ
+                タグ
             </label>
-
-
-            <div class="main-tag-area">
-
-
-                <select id="mainTag">
-
-                    <option value="">
-                        タグを選択
-                    </option>
-
-                </select>
-
-
-                <button
-                    type="button"
-                    id="addTagButton"
-                    class="small-button">
-
-                    ＋
-
-                </button>
-
-
-            </div>
-
-
-
-            <!-- =========================
-                 Tag Color
-            ========================== -->
-
-            <label>
-                タグカラー
-            </label>
-
-
-            <div
-                id="colorPicker"
-                class="color-picker">
-
-
-                <button
-                    type="button"
-                    class="color-option"
-                    data-color="#75BFE6"
-                    style="background:#75BFE6">
-                </button>
-
-
-                <button
-                    type="button"
-                    class="color-option"
-                    data-color="#7BCFA6"
-                    style="background:#7BCFA6">
-                </button>
-
-
-                <button
-                    type="button"
-                    class="color-option"
-                    data-color="#B39DDB"
-                    style="background:#B39DDB">
-                </button>
-
-
-                <button
-                    type="button"
-                    class="color-option"
-                    data-color="#F2A65A"
-                    style="background:#F2A65A">
-                </button>
-
-
-                <button
-                    type="button"
-                    class="color-option"
-                    data-color="#E98B8B"
-                    style="background:#E98B8B">
-                </button>
-
-
-                <button
-                    type="button"
-                    class="color-option"
-                    data-color="#F2D66B"
-                    style="background:#F2D66B">
-                </button>
-
-
-            </div>
-
-
-
-            <!-- =========================
-                 Sub Tags
-            ========================== -->
-
-            <label>
-                その他のタグ
-            </label>
-
 
             <input
                 type="text"
                 id="tags"
-                placeholder="#加速試験 #安定性 #ブランク">
+                placeholder="#R2試薬 #加速試験">
 
 
-
-            <!-- =========================
-                 Save
-            ========================== -->
 
             <button
                 id="saveButton"
                 class="save-button">
 
-                ログを完了
-
-            </button>
-
-
-        </div>
-
-
-    </div>
-
-
-</div>
-
-
-
-<!-- =========================
-     Tag Modal
-========================== -->
-
-<div
-    id="tagModal"
-    class="modal">
-
-
-    <div class="modal-content">
-
-
-        <div class="modal-header">
-
-
-            <button
-                id="closeTagModal"
-                class="close-button">
-
-                ×
-
-            </button>
-
-
-            <h2>
-                新しいタグ
-            </h2>
-
-
-        </div>
-
-
-
-        <div class="log-form">
-
-
-            <label>
-                タグ名
-            </label>
-
-
-            <input
-                type="text"
-                id="newTagName"
-                placeholder="#R2試薬">
-
-
-            <label>
-                色
-            </label>
-
-
-            <div
-                id="newTagColorPicker"
-                class="color-picker">
-
-
-                <button
-                    type="button"
-                    class="new-color-option color-option"
-                    data-color="#75BFE6"
-                    style="background:#75BFE6">
-                </button>
-
-
-                <button
-                    type="button"
-                    class="new-color-option color-option"
-                    data-color="#7BCFA6"
-                    style="background:#7BCFA6">
-                </button>
-
-
-                <button
-                    type="button"
-                    class="new-color-option color-option"
-                    data-color="#B39DDB"
-                    style="background:#B39DDB">
-                </button>
-
-
-                <button
-                    type="button"
-                    class="new-color-option color-option"
-                    data-color="#F2A65A"
-                    style="background:#F2A65A">
-                </button>
-
-
-                <button
-                    type="button"
-                    class="new-color-option color-option"
-                    data-color="#E98B8B"
-                    style="background:#E98B8B">
-                </button>
-
-
-                <button
-                    type="button"
-                    class="new-color-option color-option"
-                    data-color="#F2D66B"
-                    style="background:#F2D66B">
-                </button>
-
-
-            </div>
-
-
-
-            <button
-                id="saveTagButton"
-                class="save-button">
-
-                タグを保存
+                保存する
 
             </button>
 
@@ -561,7 +317,6 @@
 
 
 <script src="script.js"></script>
-
 
 </body>
 
