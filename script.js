@@ -1,6 +1,7 @@
 // ============================
 // Research Log
 // Multiple Logs per Day
+// Return Choice Version
 // ============================
 
 
@@ -11,6 +12,8 @@
 let currentDate = new Date();
 
 let selectedDate = null;
+
+let isFormOpen = false;
 
 
 // ============================
@@ -29,6 +32,7 @@ const prevMonth =
 const nextMonth =
     document.getElementById("nextMonth");
 
+
 const logModal =
     document.getElementById("logModal");
 
@@ -41,11 +45,16 @@ const selectedDateElement =
 const logList =
     document.getElementById("logList");
 
+
+const addLogArea =
+    document.getElementById("addLogArea");
+
 const addLogButton =
     document.getElementById("addLogButton");
 
 const logForm =
     document.getElementById("logForm");
+
 
 const actionInput =
     document.getElementById("action");
@@ -67,6 +76,26 @@ const tagsInput =
 
 const saveButton =
     document.getElementById("saveButton");
+
+
+// ============================
+// Return Choice Modal
+// ============================
+
+const returnModal =
+    document.getElementById("returnModal");
+
+const returnMessage =
+    document.getElementById("returnMessage");
+
+const returnToLogs =
+    document.getElementById("returnToLogs");
+
+const returnToCalendar =
+    document.getElementById("returnToCalendar");
+
+const cancelReturn =
+    document.getElementById("cancelReturn");
 
 
 // ============================
@@ -184,9 +213,9 @@ function renderCalendar() {
         getLogs();
 
 
-    // ============================
+    // =========================
     // Previous Month
-    // ============================
+    // =========================
 
     for (
         let i = firstDay - 1;
@@ -212,9 +241,9 @@ function renderCalendar() {
     }
 
 
-    // ============================
+    // =========================
     // Current Month
-    // ============================
+    // =========================
 
     for (
         let day = 1;
@@ -237,7 +266,6 @@ function renderCalendar() {
             );
 
 
-        // Today
         const today =
             new Date();
 
@@ -255,7 +283,6 @@ function renderCalendar() {
         }
 
 
-        // Has logs
         if (
             logs[dateKey] &&
             logs[dateKey].length > 0
@@ -268,7 +295,6 @@ function renderCalendar() {
         }
 
 
-        // Click
         dayElement.addEventListener(
             "click",
             function() {
@@ -286,9 +312,9 @@ function renderCalendar() {
     }
 
 
-    // ============================
+    // =========================
     // Next Month
-    // ============================
+    // =========================
 
     const totalCells =
         calendar.children.length;
@@ -348,13 +374,17 @@ function createDayElement(
 
 
 // ============================
-// Open Log Modal
+// Open Log
 // ============================
 
 function openLog(dateKey) {
 
     selectedDate =
         dateKey;
+
+
+    isFormOpen =
+        false;
 
 
     selectedDateElement.textContent =
@@ -368,6 +398,10 @@ function openLog(dateKey) {
         "none";
 
 
+    addLogArea.style.display =
+        "block";
+
+
     renderLogList();
 
 
@@ -379,25 +413,140 @@ function openLog(dateKey) {
 
 
 // ============================
-// Close Modal
+// Close Button
 // ============================
 
-function closeLog() {
+closeModal.addEventListener(
+    "click",
+    function(event) {
 
-    logModal.classList.remove(
+        event.preventDefault();
+
+        event.stopPropagation();
+
+        showReturnChoice();
+
+    }
+);
+
+
+// ============================
+// Show Return Choice
+// ============================
+
+function showReturnChoice() {
+
+    if (!selectedDate) {
+        return;
+    }
+
+
+    if (isFormOpen) {
+
+        returnMessage.textContent =
+            "入力内容は保存されていません。どこに戻りますか？";
+
+    } else {
+
+        returnMessage.textContent =
+            "戻り先を選択してください。";
+
+    }
+
+
+    returnModal.classList.add(
         "show"
     );
-
-    selectedDate = null;
-
-    clearForm();
 
 }
 
 
-closeModal.addEventListener(
+// ============================
+// Close Return Choice
+// ============================
+
+function hideReturnChoice() {
+
+    returnModal.classList.remove(
+        "show"
+    );
+
+}
+
+
+// ============================
+// Return to Today's Logs
+// ============================
+
+returnToLogs.addEventListener(
     "click",
-    closeLog
+    function() {
+
+        hideReturnChoice();
+
+
+        isFormOpen =
+            false;
+
+
+        clearForm();
+
+
+        logForm.style.display =
+            "none";
+
+
+        addLogArea.style.display =
+            "block";
+
+
+        renderLogList();
+
+    }
+);
+
+
+// ============================
+// Return to Calendar
+// ============================
+
+returnToCalendar.addEventListener(
+    "click",
+    function() {
+
+        hideReturnChoice();
+
+
+        logModal.classList.remove(
+            "show"
+        );
+
+
+        selectedDate =
+            null;
+
+
+        isFormOpen =
+            false;
+
+
+        clearForm();
+
+    }
+);
+
+
+// ============================
+// Cancel
+// ============================
+
+cancelReturn.addEventListener(
+    "click",
+    function() {
+
+        hideReturnChoice();
+
+    }
 );
 
 
@@ -418,6 +567,24 @@ function clearForm() {
     nextInput.value = "";
 
     tagsInput.value = "";
+
+}
+
+
+// ============================
+// Check Form Input
+// ============================
+
+function hasFormInput() {
+
+    return (
+        actionInput.value.trim() !== "" ||
+        purposeInput.value.trim() !== "" ||
+        resultInput.value.trim() !== "" ||
+        thoughtInput.value.trim() !== "" ||
+        nextInput.value.trim() !== "" ||
+        tagsInput.value.trim() !== ""
+    );
 
 }
 
@@ -479,9 +646,9 @@ function renderLogList() {
                 "log-card";
 
 
-            // ============================
+            // =========================
             // Title
-            // ============================
+            // =========================
 
             const title =
                 document.createElement("h3");
@@ -497,9 +664,9 @@ function renderLogList() {
             );
 
 
-            // ============================
+            // =========================
             // Purpose
-            // ============================
+            // =========================
 
             addLogItem(
                 card,
@@ -508,9 +675,9 @@ function renderLogList() {
             );
 
 
-            // ============================
+            // =========================
             // Result
-            // ============================
+            // =========================
 
             addLogItem(
                 card,
@@ -519,9 +686,9 @@ function renderLogList() {
             );
 
 
-            // ============================
+            // =========================
             // Thought
-            // ============================
+            // =========================
 
             addLogItem(
                 card,
@@ -530,9 +697,9 @@ function renderLogList() {
             );
 
 
-            // ============================
+            // =========================
             // Next
-            // ============================
+            // =========================
 
             addLogItem(
                 card,
@@ -541,9 +708,9 @@ function renderLogList() {
             );
 
 
-            // ============================
+            // =========================
             // Tags
-            // ============================
+            // =========================
 
             if (log.tags) {
 
@@ -566,9 +733,9 @@ function renderLogList() {
             }
 
 
-            // ============================
+            // =========================
             // Delete Button
-            // ============================
+            // =========================
 
             const deleteButton =
                 document.createElement("button");
@@ -582,9 +749,15 @@ function renderLogList() {
                 "削除";
 
 
+            deleteButton.type =
+                "button";
+
+
             deleteButton.addEventListener(
                 "click",
-                function() {
+                function(event) {
+
+                    event.stopPropagation();
 
                     deleteLog(index);
 
@@ -673,8 +846,22 @@ addLogButton.addEventListener(
 
         clearForm();
 
+
+        isFormOpen =
+            true;
+
+
+        logList.innerHTML =
+            "";
+
+
+        addLogArea.style.display =
+            "none";
+
+
         logForm.style.display =
             "block";
+
 
         actionInput.focus();
 
@@ -683,13 +870,12 @@ addLogButton.addEventListener(
 
 
 // ============================
-// Save New Log
+// Save Log
 // ============================
 
 saveButton.addEventListener(
     "click",
     function() {
-
 
         if (!selectedDate) {
             return;
@@ -720,7 +906,6 @@ saveButton.addEventListener(
             tagsInput.value.trim();
 
 
-        // At least one field
         if (
             !action &&
             !purpose &&
@@ -743,27 +928,33 @@ saveButton.addEventListener(
             getLogs();
 
 
-        // If date has no logs yet
         if (!logs[selectedDate]) {
 
-            logs[selectedDate] = [];
+            logs[selectedDate] =
+                [];
 
         }
 
 
         const newLog = {
 
-            action: action,
+            action:
+                action,
 
-            purpose: purpose,
+            purpose:
+                purpose,
 
-            result: result,
+            result:
+                result,
 
-            thought: thought,
+            thought:
+                thought,
 
-            next: next,
+            next:
+                next,
 
-            tags: tags,
+            tags:
+                tags,
 
             createdAt:
                 new Date().toISOString()
@@ -771,7 +962,10 @@ saveButton.addEventListener(
         };
 
 
-        // Add to existing logs
+        // =========================
+        // Multiple Logs
+        // =========================
+
         logs[selectedDate].push(
             newLog
         );
@@ -780,19 +974,24 @@ saveButton.addEventListener(
         saveLogs(logs);
 
 
-        // Clear form
         clearForm();
+
+
+        isFormOpen =
+            false;
 
 
         logForm.style.display =
             "none";
 
 
-        // Update list
+        addLogArea.style.display =
+            "block";
+
+
         renderLogList();
 
 
-        // Update calendar
         renderCalendar();
 
     }
@@ -828,7 +1027,9 @@ function deleteLog(index) {
     if (
         !logs[selectedDate]
     ) {
+
         return;
+
     }
 
 
@@ -838,7 +1039,6 @@ function deleteLog(index) {
     );
 
 
-    // Remove empty date
     if (
         logs[selectedDate].length === 0
     ) {
@@ -859,7 +1059,7 @@ function deleteLog(index) {
 
 
 // ============================
-// Previous Month
+// Month Navigation
 // ============================
 
 prevMonth.addEventListener(
@@ -876,10 +1076,6 @@ prevMonth.addEventListener(
 );
 
 
-// ============================
-// Next Month
-// ============================
-
 nextMonth.addEventListener(
     "click",
     function() {
@@ -895,7 +1091,7 @@ nextMonth.addEventListener(
 
 
 // ============================
-// Bottom Navigation
+// Calendar Navigation
 // ============================
 
 document
@@ -904,11 +1100,45 @@ document
         "click",
         function() {
 
-            // Calendar
+            if (
+                logModal.classList.contains("show")
+            ) {
+
+                logModal.classList.remove(
+                    "show"
+                );
+
+            }
+
+
+            if (
+                returnModal.classList.contains("show")
+            ) {
+
+                returnModal.classList.remove(
+                    "show"
+                );
+
+            }
+
+
+            selectedDate =
+                null;
+
+
+            isFormOpen =
+                false;
+
+
+            clearForm();
 
         }
     );
 
+
+// ============================
+// Search
+// ============================
 
 document
     .getElementById("searchButton")
@@ -924,6 +1154,10 @@ document
     );
 
 
+// ============================
+// Summary
+// ============================
+
 document
     .getElementById("summaryButton")
     .addEventListener(
@@ -936,6 +1170,43 @@ document
 
         }
     );
+
+
+// ============================
+// ESC Key
+// ============================
+
+document.addEventListener(
+    "keydown",
+    function(event) {
+
+        if (
+            event.key === "Escape"
+        ) {
+
+            if (
+                returnModal.classList.contains("show")
+            ) {
+
+                hideReturnChoice();
+
+                return;
+
+            }
+
+
+            if (
+                logModal.classList.contains("show")
+            ) {
+
+                showReturnChoice();
+
+            }
+
+        }
+
+    }
+);
 
 
 // ============================
