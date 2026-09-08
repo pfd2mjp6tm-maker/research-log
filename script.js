@@ -1,32 +1,16 @@
 // ============================
 // Research Log
-// Ver.1.1 Complete
+// Multiple Logs per Day
 // ============================
 
 
 // ============================
-// Storage Keys
-// ============================
-
-const STORAGE_KEY = "researchLogs";
-const TAG_STORAGE_KEY = "researchTags";
-
-
-// ============================
-// State
+// Variables
 // ============================
 
 let currentDate = new Date();
 
 let selectedDate = null;
-
-let currentLogs = [];
-
-let selectedMainTag = "";
-
-let selectedMainTagColor = "#75BFE6";
-
-let selectedNewTagColor = "#75BFE6";
 
 
 // ============================
@@ -54,6 +38,15 @@ const closeModal =
 const selectedDateElement =
     document.getElementById("selectedDate");
 
+const logList =
+    document.getElementById("logList");
+
+const addLogButton =
+    document.getElementById("addLogButton");
+
+const logForm =
+    document.getElementById("logForm");
+
 const actionInput =
     document.getElementById("action");
 
@@ -72,67 +65,23 @@ const nextInput =
 const tagsInput =
     document.getElementById("tags");
 
-const mainTagSelect =
-    document.getElementById("mainTag");
-
-const addTagButton =
-    document.getElementById("addTagButton");
-
-const colorPicker =
-    document.getElementById("colorPicker");
-
 const saveButton =
     document.getElementById("saveButton");
 
-const tagModal =
-    document.getElementById("tagModal");
-
-const closeTagModal =
-    document.getElementById("closeTagModal");
-
-const newTagName =
-    document.getElementById("newTagName");
-
-const newTagColorPicker =
-    document.getElementById(
-        "newTagColorPicker"
-    );
-
-const saveTagButton =
-    document.getElementById(
-        "saveTagButton"
-    );
-
-const tagLegend =
-    document.getElementById(
-        "tagLegend"
-    );
-
 
 // ============================
-// Storage
+// Local Storage
 // ============================
+
+const STORAGE_KEY =
+    "researchLogs";
+
 
 function getLogs() {
 
-    const data =
-        localStorage.getItem(
-            STORAGE_KEY
-        );
-
-    if (!data) {
-        return {};
-    }
-
-    try {
-
-        return JSON.parse(data);
-
-    } catch {
-
-        return {};
-
-    }
+    return JSON.parse(
+        localStorage.getItem(STORAGE_KEY)
+    ) || {};
 
 }
 
@@ -147,126 +96,8 @@ function saveLogs(logs) {
 }
 
 
-function getTags() {
-
-    const data =
-        localStorage.getItem(
-            TAG_STORAGE_KEY
-        );
-
-    if (!data) {
-        return {};
-    }
-
-    try {
-
-        return JSON.parse(data);
-
-    } catch {
-
-        return {};
-
-    }
-
-}
-
-
-function saveTags(tags) {
-
-    localStorage.setItem(
-        TAG_STORAGE_KEY,
-        JSON.stringify(tags)
-    );
-
-}
-
-
 // ============================
-// Migration
-// ============================
-
-function migrateOldData() {
-
-    const logs =
-        getLogs();
-
-    let changed = false;
-
-
-    Object.keys(logs).forEach(
-        function(dateKey) {
-
-            // Old format:
-            // date -> single object
-
-            if (
-                !Array.isArray(
-                    logs[dateKey]
-                )
-            ) {
-
-                const oldLog =
-                    logs[dateKey];
-
-
-                logs[dateKey] = [
-
-                    {
-                        action:
-                            oldLog.action || "",
-
-                        purpose:
-                            oldLog.purpose || "",
-
-                        result:
-                            oldLog.result || "",
-
-                        thought:
-                            oldLog.thought ||
-                            oldLog.consideration ||
-                            "",
-
-                        next:
-                            oldLog.next || "",
-
-                        tags:
-                            oldLog.tags || "",
-
-                        mainTag:
-                            oldLog.mainTag || "",
-
-                        mainTagColor:
-                            oldLog.mainTagColor ||
-                            "#75BFE6",
-
-                        createdAt:
-                            oldLog.createdAt ||
-                            new Date().toISOString()
-
-                    }
-
-                ];
-
-
-                changed = true;
-
-            }
-
-        }
-    );
-
-
-    if (changed) {
-
-        saveLogs(logs);
-
-    }
-
-}
-
-
-// ============================
-// Date
+// Date Helper
 // ============================
 
 function getDateKey(
@@ -278,15 +109,9 @@ function getDateKey(
     return (
         year +
         "-" +
-        String(month + 1).padStart(
-            2,
-            "0"
-        ) +
+        String(month + 1).padStart(2, "0") +
         "-" +
-        String(day).padStart(
-            2,
-            "0"
-        )
+        String(day).padStart(2, "0")
     );
 
 }
@@ -296,7 +121,6 @@ function formatDate(dateKey) {
 
     const parts =
         dateKey.split("-");
-
 
     return (
         parts[0] +
@@ -348,12 +172,6 @@ function renderCalendar() {
         ).getDate();
 
 
-    const logs =
-        getLogs();
-
-
-    // Previous month days
-
     const daysInPreviousMonth =
         new Date(
             year,
@@ -361,6 +179,14 @@ function renderCalendar() {
             0
         ).getDate();
 
+
+    const logs =
+        getLogs();
+
+
+    // ============================
+    // Previous Month
+    // ============================
 
     for (
         let i = firstDay - 1;
@@ -386,7 +212,9 @@ function renderCalendar() {
     }
 
 
-    // Current month
+    // ============================
+    // Current Month
+    // ============================
 
     for (
         let day = 1;
@@ -410,20 +238,14 @@ function renderCalendar() {
 
 
         // Today
-
         const today =
             new Date();
 
 
         if (
-            year ===
-                today.getFullYear() &&
-
-            month ===
-                today.getMonth() &&
-
-            day ===
-                today.getDate()
+            year === today.getFullYear() &&
+            month === today.getMonth() &&
+            day === today.getDate()
         ) {
 
             dayElement.classList.add(
@@ -433,74 +255,25 @@ function renderCalendar() {
         }
 
 
-        // Tag colors
-
+        // Has logs
         if (
             logs[dateKey] &&
             logs[dateKey].length > 0
         ) {
 
-            const colors =
-                getMainTagColors(
-                    logs[dateKey]
-                );
-
-
-            if (
-                colors.length > 0
-            ) {
-
-                const container =
-                    document.createElement(
-                        "div"
-                    );
-
-
-                container.className =
-                    "tag-dots";
-
-
-                colors.forEach(
-                    function(color) {
-
-                        const dot =
-                            document.createElement(
-                                "span"
-                            );
-
-
-                        dot.className =
-                            "tag-dot";
-
-
-                        dot.style.backgroundColor =
-                            color;
-
-
-                        container.appendChild(
-                            dot
-                        );
-
-                    }
-                );
-
-
-                dayElement.appendChild(
-                    container
-                );
-
-            }
+            dayElement.classList.add(
+                "has-log"
+            );
 
         }
 
 
+        // Click
         dayElement.addEventListener(
             "click",
             function() {
 
-                openLog(
-                    dateKey
-                );
+                openLog(dateKey);
 
             }
         );
@@ -513,16 +286,21 @@ function renderCalendar() {
     }
 
 
-    // Fill remaining cells
+    // ============================
+    // Next Month
+    // ============================
 
-    const remaining =
-        42 -
+    const totalCells =
         calendar.children.length;
+
+
+    const remainingCells =
+        42 - totalCells;
 
 
     for (
         let i = 1;
-        i <= remaining;
+        i <= remainingCells;
         i++
     ) {
 
@@ -539,14 +317,11 @@ function renderCalendar() {
 
     }
 
-
-    renderTagLegend();
-
 }
 
 
 // ============================
-// Create Day
+// Create Calendar Day
 // ============================
 
 function createDayElement(
@@ -555,9 +330,7 @@ function createDayElement(
 ) {
 
     const element =
-        document.createElement(
-            "div"
-        );
+        document.createElement("div");
 
 
     element.className =
@@ -565,19 +338,8 @@ function createDayElement(
         className;
 
 
-    const number =
-        document.createElement(
-            "span"
-        );
-
-
-    number.textContent =
+    element.textContent =
         dayNumber;
-
-
-    element.appendChild(
-        number
-    );
 
 
     return element;
@@ -586,43 +348,7 @@ function createDayElement(
 
 
 // ============================
-// Main Tag Colors
-// ============================
-
-function getMainTagColors(
-    logs
-) {
-
-    const colors = [];
-
-
-    logs.forEach(
-        function(log) {
-
-            const color =
-                log.mainTagColor;
-
-
-            if (
-                color &&
-                !colors.includes(color)
-            ) {
-
-                colors.push(color);
-
-            }
-
-        }
-    );
-
-
-    return colors;
-
-}
-
-
-// ============================
-// Open Log
+// Open Log Modal
 // ============================
 
 function openLog(dateKey) {
@@ -632,34 +358,17 @@ function openLog(dateKey) {
 
 
     selectedDateElement.textContent =
-        formatDate(
-            dateKey
-        );
-
-
-    const logs =
-        getLogs();
-
-
-    currentLogs =
-        logs[dateKey]
-            ? logs[dateKey].map(
-                function(log) {
-                    return {
-                        ...log
-                    };
-                }
-            )
-            : [];
+        formatDate(dateKey);
 
 
     clearForm();
 
-    populateMainTags();
 
-    selectColor(
-        selectedMainTagColor
-    );
+    logForm.style.display =
+        "none";
+
+
+    renderLogList();
 
 
     logModal.classList.add(
@@ -667,6 +376,29 @@ function openLog(dateKey) {
     );
 
 }
+
+
+// ============================
+// Close Modal
+// ============================
+
+function closeLog() {
+
+    logModal.classList.remove(
+        "show"
+    );
+
+    selectedDate = null;
+
+    clearForm();
+
+}
+
+
+closeModal.addEventListener(
+    "click",
+    closeLog
+);
 
 
 // ============================
@@ -687,386 +419,277 @@ function clearForm() {
 
     tagsInput.value = "";
 
-    mainTagSelect.value = "";
-
-    selectedMainTag = "";
-
-    selectedMainTagColor =
-        "#75BFE6";
+}
 
 
-    document
-        .querySelectorAll(
-            ".color-option"
-        )
-        .forEach(
-            function(button) {
+// ============================
+// Render Log List
+// ============================
 
-                button.classList.remove(
-                    "selected"
+function renderLogList() {
+
+    logList.innerHTML = "";
+
+
+    if (!selectedDate) {
+        return;
+    }
+
+
+    const logs =
+        getLogs();
+
+
+    const dayLogs =
+        logs[selectedDate] || [];
+
+
+    if (dayLogs.length === 0) {
+
+        const emptyMessage =
+            document.createElement("p");
+
+
+        emptyMessage.className =
+            "empty-message";
+
+
+        emptyMessage.textContent =
+            "まだ研究ログはありません。";
+
+
+        logList.appendChild(
+            emptyMessage
+        );
+
+
+        return;
+
+    }
+
+
+    dayLogs.forEach(
+        function(log, index) {
+
+            const card =
+                document.createElement("div");
+
+
+            card.className =
+                "log-card";
+
+
+            // ============================
+            // Title
+            // ============================
+
+            const title =
+                document.createElement("h3");
+
+
+            title.textContent =
+                log.action ||
+                "研究ログ";
+
+
+            card.appendChild(
+                title
+            );
+
+
+            // ============================
+            // Purpose
+            // ============================
+
+            addLogItem(
+                card,
+                "目的",
+                log.purpose
+            );
+
+
+            // ============================
+            // Result
+            // ============================
+
+            addLogItem(
+                card,
+                "結果",
+                log.result
+            );
+
+
+            // ============================
+            // Thought
+            // ============================
+
+            addLogItem(
+                card,
+                "考察・気づき",
+                log.thought
+            );
+
+
+            // ============================
+            // Next
+            // ============================
+
+            addLogItem(
+                card,
+                "次に活かすこと",
+                log.next
+            );
+
+
+            // ============================
+            // Tags
+            // ============================
+
+            if (log.tags) {
+
+                const tags =
+                    document.createElement("div");
+
+
+                tags.className =
+                    "log-tags";
+
+
+                tags.textContent =
+                    log.tags;
+
+
+                card.appendChild(
+                    tags
                 );
 
             }
-        );
-
-}
 
 
-// ============================
-// Close Log
-// ============================
+            // ============================
+            // Delete Button
+            // ============================
 
-function closeLog() {
-
-    logModal.classList.remove(
-        "show"
-    );
-
-    selectedDate = null;
-
-}
+            const deleteButton =
+                document.createElement("button");
 
 
-// ============================
-// Populate Main Tags
-// ============================
-
-function populateMainTags() {
-
-    const tags =
-        getTags();
+            deleteButton.className =
+                "delete-button";
 
 
-    mainTagSelect.innerHTML = "";
+            deleteButton.textContent =
+                "削除";
 
 
-    const defaultOption =
-        document.createElement(
-            "option"
-        );
-
-
-    defaultOption.value = "";
-
-    defaultOption.textContent =
-        "タグを選択";
-
-
-    mainTagSelect.appendChild(
-        defaultOption
-    );
-
-
-    Object.keys(tags).forEach(
-        function(tagName) {
-
-            const option =
-                document.createElement(
-                    "option"
-                );
-
-
-            option.value =
-                tagName;
-
-
-            option.textContent =
-                tagName;
-
-
-            mainTagSelect.appendChild(
-                option
-            );
-
-        }
-    );
-
-}
-
-
-// ============================
-// Main Tag Selection
-// ============================
-
-mainTagSelect.addEventListener(
-    "change",
-    function() {
-
-        selectedMainTag =
-            this.value;
-
-
-        const tags =
-            getTags();
-
-
-        if (
-            tags[selectedMainTag]
-        ) {
-
-            selectedMainTagColor =
-                tags[selectedMainTag].color;
-
-
-            selectColor(
-                selectedMainTagColor
-            );
-
-        }
-
-    }
-);
-
-
-// ============================
-// Color Selection
-// ============================
-
-function selectColor(color) {
-
-    selectedMainTagColor =
-        color;
-
-
-    document
-        .querySelectorAll(
-            ".color-option"
-        )
-        .forEach(
-            function(button) {
-
-                button.classList.remove(
-                    "selected"
-                );
-
-
-                if (
-                    button.dataset.color ===
-                    color
-                ) {
-
-                    button.classList.add(
-                        "selected"
-                    );
-
-                }
-
-            }
-        );
-
-}
-
-
-document
-    .querySelectorAll(
-        "#colorPicker .color-option"
-    )
-    .forEach(
-        function(button) {
-
-            button.addEventListener(
+            deleteButton.addEventListener(
                 "click",
                 function() {
 
-                    selectColor(
-                        this.dataset.color
-                    );
+                    deleteLog(index);
 
                 }
+            );
+
+
+            card.appendChild(
+                deleteButton
+            );
+
+
+            logList.appendChild(
+                card
             );
 
         }
     );
 
+}
+
 
 // ============================
-// Add New Tag
+// Add Log Item
 // ============================
 
-addTagButton.addEventListener(
-    "click",
-    function() {
+function addLogItem(
+    card,
+    label,
+    value
+) {
 
-        newTagName.value = "";
-
-        selectedNewTagColor =
-            "#75BFE6";
-
-
-        document
-            .querySelectorAll(
-                ".new-color-option"
-            )
-            .forEach(
-                function(button) {
-
-                    button.classList.remove(
-                        "selected"
-                    );
-
-                }
-            );
-
-
-        tagModal.classList.add(
-            "show"
-        );
-
+    if (!value) {
+        return;
     }
-);
 
 
-// ============================
-// New Tag Color
-// ============================
-
-document
-    .querySelectorAll(
-        ".new-color-option"
-    )
-    .forEach(
-        function(button) {
-
-            button.addEventListener(
-                "click",
-                function() {
-
-                    selectedNewTagColor =
-                        this.dataset.color;
+    const item =
+        document.createElement("div");
 
 
-                    document
-                        .querySelectorAll(
-                            ".new-color-option"
-                        )
-                        .forEach(
-                            function(other) {
-
-                                other.classList.remove(
-                                    "selected"
-                                );
-
-                            }
-                        );
+    item.className =
+        "log-item";
 
 
-                    this.classList.add(
-                        "selected"
-                    );
+    const labelElement =
+        document.createElement("strong");
 
-                }
-            );
 
-        }
+    labelElement.textContent =
+        label;
+
+
+    const valueElement =
+        document.createElement("p");
+
+
+    valueElement.textContent =
+        value;
+
+
+    item.appendChild(
+        labelElement
     );
 
 
+    item.appendChild(
+        valueElement
+    );
+
+
+    card.appendChild(
+        item
+    );
+
+}
+
+
 // ============================
-// Save New Tag
+// Add New Log
 // ============================
 
-saveTagButton.addEventListener(
+addLogButton.addEventListener(
     "click",
     function() {
 
-        let name =
-            newTagName.value.trim();
+        clearForm();
 
+        logForm.style.display =
+            "block";
 
-        if (!name) {
-
-            alert(
-                "タグ名を入力してください。"
-            );
-
-            return;
-
-        }
-
-
-        // Add # automatically
-
-        if (
-            !name.startsWith("#")
-        ) {
-
-            name =
-                "#" + name;
-
-        }
-
-
-        const tags =
-            getTags();
-
-
-        tags[name] = {
-
-            color:
-                selectedNewTagColor
-
-        };
-
-
-        saveTags(
-            tags
-        );
-
-
-        populateMainTags();
-
-
-        mainTagSelect.value =
-            name;
-
-
-        selectedMainTag =
-            name;
-
-
-        selectedMainTagColor =
-            selectedNewTagColor;
-
-
-        selectColor(
-            selectedNewTagColor
-        );
-
-
-        tagModal.classList.remove(
-            "show"
-        );
-
-
-        renderTagLegend();
+        actionInput.focus();
 
     }
 );
 
 
 // ============================
-// Close Tag Modal
-// ============================
-
-closeTagModal.addEventListener(
-    "click",
-    function() {
-
-        tagModal.classList.remove(
-            "show"
-        );
-
-    }
-);
-
-
-// ============================
-// Save Log
+// Save New Log
 // ============================
 
 saveButton.addEventListener(
     "click",
     function() {
+
 
         if (!selectedDate) {
             return;
@@ -1076,22 +699,28 @@ saveButton.addEventListener(
         const action =
             actionInput.value.trim();
 
+
         const purpose =
             purposeInput.value.trim();
+
 
         const result =
             resultInput.value.trim();
 
+
         const thought =
             thoughtInput.value.trim();
 
+
         const next =
             nextInput.value.trim();
+
 
         const tags =
             tagsInput.value.trim();
 
 
+        // At least one field
         if (
             !action &&
             !purpose &&
@@ -1110,35 +739,31 @@ saveButton.addEventListener(
         }
 
 
-        // Main tag is optional for now
+        const logs =
+            getLogs();
+
+
+        // If date has no logs yet
+        if (!logs[selectedDate]) {
+
+            logs[selectedDate] = [];
+
+        }
+
 
         const newLog = {
 
-            action:
-                action,
+            action: action,
 
-            purpose:
-                purpose,
+            purpose: purpose,
 
-            result:
-                result,
+            result: result,
 
-            thought:
-                thought,
+            thought: thought,
 
-            next:
-                next,
+            next: next,
 
-            tags:
-                tags,
-
-            mainTag:
-                selectedMainTag,
-
-            mainTagColor:
-                selectedMainTag
-                    ? selectedMainTagColor
-                    : "",
+            tags: tags,
 
             createdAt:
                 new Date().toISOString()
@@ -1146,123 +771,95 @@ saveButton.addEventListener(
         };
 
 
-        currentLogs.push(
+        // Add to existing logs
+        logs[selectedDate].push(
             newLog
         );
 
 
-        const logs =
-            getLogs();
+        saveLogs(logs);
 
 
-        logs[selectedDate] =
-            currentLogs;
+        // Clear form
+        clearForm();
 
 
-        saveLogs(
-            logs
-        );
+        logForm.style.display =
+            "none";
 
 
+        // Update list
+        renderLogList();
+
+
+        // Update calendar
         renderCalendar();
-
-
-        const addMore =
-            confirm(
-                "ログを保存しました！\n\n" +
-                "同じ日にもう1つログを追加しますか？"
-            );
-
-
-        if (addMore) {
-
-            clearForm();
-
-            populateMainTags();
-
-            return;
-
-        }
-
-
-        closeLog();
 
     }
 );
 
 
 // ============================
-// Tag Legend
+// Delete Log
 // ============================
 
-function renderTagLegend() {
+function deleteLog(index) {
 
-    tagLegend.innerHTML = "";
-
-
-    const tags =
-        getTags();
+    if (!selectedDate) {
+        return;
+    }
 
 
-    Object.keys(tags).forEach(
-        function(tagName) {
-
-            const item =
-                document.createElement(
-                    "div"
-                );
+    const shouldDelete =
+        confirm(
+            "この研究ログを削除しますか？"
+        );
 
 
-            item.className =
-                "legend-item";
+    if (!shouldDelete) {
+        return;
+    }
 
 
-            const dot =
-                document.createElement(
-                    "span"
-                );
+    const logs =
+        getLogs();
 
 
-            dot.className =
-                "legend-dot";
+    if (
+        !logs[selectedDate]
+    ) {
+        return;
+    }
 
 
-            dot.style.backgroundColor =
-                tags[tagName].color;
-
-
-            const text =
-                document.createElement(
-                    "span"
-                );
-
-
-            text.textContent =
-                tagName;
-
-
-            item.appendChild(
-                dot
-            );
-
-
-            item.appendChild(
-                text
-            );
-
-
-            tagLegend.appendChild(
-                item
-            );
-
-        }
+    logs[selectedDate].splice(
+        index,
+        1
     );
+
+
+    // Remove empty date
+    if (
+        logs[selectedDate].length === 0
+    ) {
+
+        delete logs[selectedDate];
+
+    }
+
+
+    saveLogs(logs);
+
+
+    renderLogList();
+
+    renderCalendar();
 
 }
 
 
 // ============================
-// Month Navigation
+// Previous Month
 // ============================
 
 prevMonth.addEventListener(
@@ -1273,12 +870,15 @@ prevMonth.addEventListener(
             currentDate.getMonth() - 1
         );
 
-
         renderCalendar();
 
     }
 );
 
+
+// ============================
+// Next Month
+// ============================
 
 nextMonth.addEventListener(
     "click",
@@ -1287,7 +887,6 @@ nextMonth.addEventListener(
         currentDate.setMonth(
             currentDate.getMonth() + 1
         );
-
 
         renderCalendar();
 
@@ -1300,29 +899,25 @@ nextMonth.addEventListener(
 // ============================
 
 document
-    .getElementById(
-        "calendarButton"
-    )
+    .getElementById("calendarButton")
     .addEventListener(
         "click",
         function() {
 
-            renderCalendar();
+            // Calendar
 
         }
     );
 
 
 document
-    .getElementById(
-        "searchButton"
-    )
+    .getElementById("searchButton")
     .addEventListener(
         "click",
         function() {
 
             alert(
-                "Search機能は次のアップデートで追加します！"
+                "Search機能は次のバージョンで追加します！"
             );
 
         }
@@ -1330,15 +925,13 @@ document
 
 
 document
-    .getElementById(
-        "summaryButton"
-    )
+    .getElementById("summaryButton")
     .addEventListener(
         "click",
         function() {
 
             alert(
-                "Summary機能は次のアップデートで追加します！"
+                "Summary機能は次のバージョンで追加します！"
             );
 
         }
@@ -1349,10 +942,4 @@ document
 // Start
 // ============================
 
-migrateOldData();
-
 renderCalendar();
-
-populateMainTags();
-
-renderTagLegend();
